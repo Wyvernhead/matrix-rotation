@@ -3,56 +3,105 @@ import {InputRow, Matrix, OutputRow} from "../models/matrix"
 class Processor {
     public processMatrix(inputRow: InputRow): OutputRow {
         return this.formatToOutput(
-            this.rotateMatrix(
+            this.rotateMatrixClockwise(
                 this.formatFromInput(inputRow)
             )
         )
     }
 
-    private rotateMatrix(matrix: Matrix) {
+    private rotateMatrixClockwise(matrix: Matrix): Matrix {
         if (!matrix.is_valid) return matrix
 
-        let currentRow = 0, currentColumn = 0, previousValue = null, currentValue = null
-        let currentProcessingWidth = matrix.matrix.length, currentProcessingHeight = matrix.matrix.length
+        let topEdge = 0, leftEdge = 0, previousValue = null, currentValue = null
+        let rightEdge = matrix.matrix.length, bottomEdge = matrix.matrix.length
 
-        while (currentRow < currentProcessingHeight && currentColumn < currentProcessingWidth) {
-            if (currentRow + 1 == currentProcessingHeight || currentColumn + 1 == currentProcessingWidth) {
+        while (topEdge < bottomEdge && leftEdge < rightEdge) {
+            if (topEdge + 1 == bottomEdge || leftEdge + 1 == rightEdge) {
                 break
             }
 
-            previousValue = matrix.matrix[currentRow + 1][currentColumn]
+            previousValue = matrix.matrix[topEdge + 1][leftEdge]
 
-            for (let i = currentColumn; i < currentProcessingWidth; i++) {
-                currentValue = matrix.matrix[currentRow][i]
-                matrix.matrix[currentRow][i] = previousValue
+            for (let i = leftEdge; i < rightEdge; i++) {
+                currentValue = matrix.matrix[topEdge][i]
+                matrix.matrix[topEdge][i] = previousValue
                 previousValue = currentValue
             }
-            currentRow++
+            topEdge++
 
-            for (let i = currentRow; i < currentProcessingHeight; i++) {
-                currentValue = matrix.matrix[i][currentProcessingWidth - 1]
-                matrix.matrix[i][currentProcessingWidth - 1] = previousValue
+            for (let i = topEdge; i < bottomEdge; i++) {
+                currentValue = matrix.matrix[i][rightEdge - 1]
+                matrix.matrix[i][rightEdge - 1] = previousValue
                 previousValue = currentValue
             }
-            currentProcessingWidth--
+            rightEdge--
 
-            if (currentRow < currentProcessingHeight) {
-                for (let i = currentProcessingWidth - 1; i >= currentColumn; i--) {
-                    currentValue = matrix.matrix[currentProcessingHeight - 1][i]
-                    matrix.matrix[currentProcessingHeight - 1][i] = previousValue
+            if (topEdge < bottomEdge) {
+                for (let i = rightEdge - 1; i >= leftEdge; i--) {
+                    currentValue = matrix.matrix[bottomEdge - 1][i]
+                    matrix.matrix[bottomEdge - 1][i] = previousValue
                     previousValue = currentValue
                 }
             }
-            currentProcessingHeight--
+            bottomEdge--
 
-            if (currentColumn < currentProcessingWidth) {
-                for (let i = currentProcessingHeight - 1; i >= currentRow; i--) {
-                    currentValue = matrix.matrix[i][currentColumn]
-                    matrix.matrix[i][currentColumn] = previousValue
+            if (leftEdge < rightEdge) {
+                for (let i = bottomEdge - 1; i >= topEdge; i--) {
+                    currentValue = matrix.matrix[i][leftEdge]
+                    matrix.matrix[i][leftEdge] = previousValue
                     previousValue = currentValue
                 }
             }
-            currentColumn++
+            leftEdge++
+        }
+
+        return matrix
+    }
+
+    private rotateMatrixAntiClockwise(matrix: Matrix): Matrix {
+        if (!matrix.is_valid) return matrix
+
+        let topEdge = 0, leftEdge = -1, previousValue = null, currentValue = null
+        let rightEdge = matrix.matrix.length - 1, bottomEdge = matrix.matrix.length
+
+        while (topEdge < bottomEdge && leftEdge < rightEdge) {
+            if (topEdge + 1 == bottomEdge || leftEdge + 1 == rightEdge) {
+                break
+            }
+
+            previousValue = matrix.matrix[topEdge + 1][rightEdge]
+
+            for (let i = rightEdge; i > leftEdge; i--) {
+                currentValue = matrix.matrix[topEdge][i]
+                matrix.matrix[topEdge][i] = previousValue
+                previousValue = currentValue
+            }
+            topEdge++
+
+            for (let i = topEdge; i < bottomEdge; i++) {
+                currentValue = matrix.matrix[i][leftEdge + 1]
+                matrix.matrix[i][leftEdge + 1] = previousValue
+                previousValue = currentValue
+            }
+            leftEdge++
+
+            if (topEdge < bottomEdge) {
+                for (let i = leftEdge + 1; i <= rightEdge; i++) {
+                    currentValue = matrix.matrix[bottomEdge - 1][i]
+                    matrix.matrix[bottomEdge - 1][i] = previousValue
+                    previousValue = currentValue
+                }
+            }
+            bottomEdge--
+
+            if (leftEdge < rightEdge) {
+                for (let i = bottomEdge - 1; i >= topEdge; i--) {
+                    currentValue = matrix.matrix[i][rightEdge]
+                    matrix.matrix[i][rightEdge] = previousValue
+                    previousValue = currentValue
+                }
+            }
+            rightEdge--
         }
 
         return matrix
