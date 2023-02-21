@@ -13,3 +13,10 @@ Supports only rectangular matrix.
   output files
 
 E.G. `node cli.js input.csv > output.csv`
+
+Input file structure must follow pattern:
+```csv
+id,json
+1,"[1,2,3,4]"
+2,"[0]"
+```
