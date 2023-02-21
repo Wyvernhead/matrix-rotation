@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  node:
+    container_name: node
+    image: node:18.14-alpine
+    user: node
+    restart: always
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+    ports:
+      - '9229:9229'
+    command: sleep infinity
